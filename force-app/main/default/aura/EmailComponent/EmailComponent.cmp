@@ -1,0 +1,136 @@
+<aura:component controller="EmailTab" implements="flexipage:availableForAllPageTypes,force:hasRecordId">
+   <aura:attribute name="options" type="User"/>
+    <aura:attribute name="objectsRecord" type="List" /> 
+    <aura:attribute name="selectedRecord" type="List"/> 
+    <aura:attribute name="recordsId" type="String"/>
+    <aura:attribute name="strText" type="String"/>
+    <aura:attribute name="subject" type="String"/>
+    <aura:attribute name="mailBody" type="String"/>
+    <aura:attribute name="ErrorMsg" type="String"/>
+    <aura:attribute name="ErrorMsg2" type="String"/>
+    <aura:attribute name="Emails" type="List" /> 
+    <aura:attribute name="ccEmails" type="List" /> 
+    <aura:attribute name="bccEmails" type="List" /> 
+    <aura:attribute name="openAttmenu" type="boolean" default="false"/>
+    <aura:attribute name="showError" type="boolean" default="false"/>
+    <aura:attribute name="addAttachmentPill" type="List"/>
+    <aura:attribute name="displayDp" type="boolean" default="false"/>
+    <aura:attribute name="displayCc" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:if isTrue="{!v.showError}">
+        <div>
+            <div style="background-color:#8B0000;">
+                <p class="slds-p-vertical_medium slds-p-left_medium" style="color:white; font-size:large;">{!v.ErrorMsg}</p>
+            </div>
+            <p class="slds-p-vertical_medium slds-p-left_medium slds-box" style="color:#8B0000;">{!v.ErrorMsg2}</p>
+        </div>
+    </aura:if>
+    <div class="slds-box">
+        <table style="border-collapse:separate; border-spacing:5px 10px;">
+            <!-- From Field -->
+            <tr> 
+                <td>   <label>From</label>    </td>
+                <td>   <lightning:combobox variant="label-hidden" name="From" options="{!v.options}"/></td>
+            </tr>
+            <tr >
+                <!-- To Field -->
+                <td>   <label>To</label>    </td>
+                <td>
+                    <lightning:layout multipleRows="true" class="slds-box slds-box_xx-small" >
+                        <lightning:layoutItem>
+                            <lightning:layout multipleRows="true">
+                                <aura:iteration items="{!v.selectedRecord}" var="item" indexVar="index">
+                                    <lightning:layoutItem>
+                                        <lightning:pill  label="{!item.label}" onremove="{!c.handleItemRemove}" >
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="{!'standard:'+item.iconname}" alternativeText="Lead"/>
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </lightning:layoutItem>
+                                </aura:iteration>
+                            </lightning:layout>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem flexibility="auto">
+                            <lightning:input value="{!v.strText}" oncommit="{!c.onCommit}" onblur="{!c.onBlur}" onkeyup="{!c.searchRecords}" variant="label-hidden"  class="test"></lightning:input>
+                            <!--   <lightning:input value="{!v.strText}" oncommit="{!c.onCommit}" onblur="{!c.onBlur}" onkeyup="{!c.searchRecords}" variant="label-hidden"  class="test"></lightning:input> -->
+                        </lightning:layoutItem>
+                        <aura:if isTrue="{!!v.displayCc}">
+                            
+                            <lightning:layoutItem alignmentBump="left">
+                                <lightning:button variant="base" label="Cc" onclick="{!c.onCc}"/>
+                            </lightning:layoutItem></aura:if>
+                    </lightning:layout>
+                    <aura:if isTrue="{!v.displayDp}" >
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                    <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                                        <ul class="slds-listbox slds-listbox_vertical recordListBox">
+                                            
+                                            <!-- To display Drop down List -->
+                                            <aura:iteration items="{!v.objectsRecord}" var="rec" indexVar="count">
+                                                <li id="{!'toField '+count}" class="slds-listbox__item hove" onmousedown="{!c.selectItem}">
+                                                    <div class="slds-media slds-listbox__option_entity slds-border_bottom">
+                                                        <span>
+                                                            <lightning:icon iconName="{!'standard:'+rec.ObjType}" alternativeText="objectIcon"></lightning:icon>
+                                                        </span>
+                                                        <span class="verticalAlign  slds-p-left_x-small">
+                                                            <span class="slds-truncate">{!rec.name}<br/>{!rec.email}</span>
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            </aura:iteration></ul></div></div></div></div></aura:if>
+                </td></tr>
+            <!-- Cc Field -->
+            <aura:if isTrue="{!v.displayCc}">
+                <tr>
+                    <td>   <label>Cc</label>    </td>
+                    <td>
+                        <c:emailfield Emails="{!v.ccEmails}"/>
+                    </td></tr>
+            </aura:if>
+            <!-- Bcc Field -->
+            <tr>
+                <td>   <label>Bcc</label>    </td>
+                <td>
+                    <c:emailfield Emails="{!v.bccEmails}"/>
+                </td></tr>
+            <tr>
+                <td><label>Subject</label></td>
+                <td>
+                    <lightning:input value="{!v.subject}" variant="label-hidden"  placeholder="Enter Subject..."></lightning:input>
+                </td>
+            </tr>
+        </table>
+        
+        
+        <lightning:inputRichText class="slds-m-top_small" value="{!v.mailBody}"/>
+
+        <div>
+            <aura:iteration items="{!v.addAttachmentPill}" var="item" indexVar="index">
+                <lightning:pill class="slds-m-top_xx-small slds-size_2-of-2" label="{!item.Title}" onremove="{!c.attRemove}" >
+                    <aura:set attribute="media">
+                        <lightning:icon class="slds-m-left_small" iconName="{!'doctype:'+item.icon}" alternativeText="Attachment"/>
+                    </aura:set>
+                </lightning:pill>
+            </aura:iteration>
+        </div>
+  
+        <lightning:button class="attbutton" iconName="utility:attach" iconPosition="left" onclick="{!c.openModel}" />
+        
+        <lightning:layout class="slds-m-top_small">
+            <lightning:layoutitem size="9">
+                <c:MultiObjectLookup1 record="{!v.recordId}"/>
+            </lightning:layoutitem>
+            <lightning:layoutitem size="2">
+                <div style="margin-top:-13px">
+                <lightning:button variant="brand" class="slds-m-top_x-large slds-m-left_small" label="Send" title="Send" onclick="{!c.onSave}" />
+                    </div>
+            </lightning:layoutitem>
+        </lightning:layout>
+        <aura:if isTrue="{!v.openAttmenu}">
+            <c:AttachmentMenu addAttachmentPill="{!v.addAttachmentPill}" isModalOpen="{!v.openAttmenu}"/>
+        </aura:if>           
+    </div>
+</aura:component>

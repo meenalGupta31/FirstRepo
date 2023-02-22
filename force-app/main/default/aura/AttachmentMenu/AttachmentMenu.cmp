@@ -1,0 +1,150 @@
+<aura:component controller="EmailTab" implements="flexipage:availableForAllPageTypes,force:hasRecordId">
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg', '.dox','.txt' ,'.pdf','.ppt' ]" />
+    <aura:attribute name="multiple" type="Boolean" default="true" />
+    <aura:attribute name="disabled" type="Boolean" default="true" />
+    <aura:attribute name="inSearch" type="Boolean" default="false" />
+    <aura:attribute name="usualData" type="Boolean" default="true" />
+    <aura:attribute name="addButton" type="Boolean" default="true" />
+    <aura:attribute name="noSearchResult" type="Boolean" default="false" />
+    <aura:attribute name="ContentDocItems" type="List" />
+    <aura:attribute name="searchedContentDocItems" type="List" />
+    <aura:attribute name="selecteditems" type="List"/>
+    <aura:attribute name="checked" type="String[]"/>
+    <aura:attribute name="addAttachmentPill" type="List"/>
+    <aura:attribute name="searchInput" type="String"/>
+    <aura:attribute name="attcount" type="integer" default="0"/>
+    <aura:attribute name="attachmentscount" type="integer" default="0"/>
+    <aura:attribute name="isModalOpen" type="boolean" default="true"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:html tag="style">
+        .slds-modal__container {
+        width: 50%;
+        height: 100%;
+        }
+    </aura:html> 
+    <aura:if isTrue="{!v.isModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Files</h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>
+                        <div>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="3">
+                                    <lightning:fileUpload name="fileUploader"
+                                                          multiple="true"
+                                                          accept="{!v.filetype}"
+                                                          onuploadfinished="{!c.handleUploadFinished}" />
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="9">
+                                    <div>
+                                        <lightning:input type="search" placeholder="Search ...." value="{!v.searchInput}" onkeyup="{!c.searchResult}" />
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="3">                         	
+                                    <lightning:verticalNavigation>
+                                        <lightning:verticalNavigationSection label="">
+                                            <lightning:verticalNavigationItem label="Owned by Me"/>
+                                            <lightning:verticalNavigationItem label="Shared by Me"/>
+                                            <lightning:verticalNavigationItem label="Recent"/>
+                                            <lightning:verticalNavigationItem label="Following"/>
+                                            <lightning:verticalNavigationItem label="Libraries"/>
+                                            <lightning:verticalNavigationItem label="Recent Files"/>
+                                        </lightning:verticalNavigationSection>
+                                    </lightning:verticalNavigation>
+                                </lightning:layoutItem>
+                                <aura:if isTrue="{!v.usualData}" >
+                                    <lightning:layoutItem size="9">
+                                        <div  class="slds-scrollable_y" id="content" style="height:21rem;width:29rem" onscroll="{!c.onScroll}">
+                                            <br/>
+                                            <div>
+                                                <aura:iteration items="{!v.ContentDocItems}" var="item" indexVar="index">
+                                                    <div class="hove slds-m-top_x-small" id="{!index}" onclick="{!c.checkCB}">
+                                                        <lightning:layout class="slds-border_bottom">
+                                                            <lightning:layoutItem size="1">
+                                                                <aura:iteration items="{!v.checked}" var="check" start="{!index}" end="{!index+1}">
+                                                                    <lightning:input type="checkbox" class="slds-m-left_small slds-m-top_x-small" value="{!item}" onchange="{!c.selectItems}"
+                                                                                     name="input2" checked="{!check == 'true'}" />
+                                                                </aura:iteration>
+                                                            </lightning:layoutItem>
+                                                            <lightning:layoutItem size="1">
+                                                                <img src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&amp;versionId='+item.Id}" style="height:2rem; width:2rem;" />
+                                                             
+                                                            </lightning:layoutItem>
+                                                            <lightning:layoutItem size="10"  class="slds-m-left_x-small ">
+                                                                <b style="color:#1E90FF;">{!item.Title}</b><br/>
+                                                                {!item.ContentModifiedDate}*{!item.ContentSize}*{!item.FileType}
+                                                            </lightning:layoutItem>
+                                                        </lightning:layout></div>
+                                                </aura:iteration>
+                                            </div>
+                                        </div>
+                                    </lightning:layoutItem>
+                                </aura:if>
+                                <aura:if isTrue="{!v.inSearch}">
+                                    <lightning:layoutItem size="9">
+                                        <br/>
+                                        <aura:iteration items="{!v.searchedContentDocItems}" var="item" indexVar="index">
+                                            <div class="hove slds-m-top_x-small" id="{!index}" onclick="{!c.checkCB}">
+                                                <lightning:layout class="slds-border_bottom">
+                                                    <lightning:layoutItem size="1">
+                                                        <aura:iteration items="{!v.checked}" var="check" start="{!index}" end="{!index+1}">
+                                                            <lightning:input type="checkbox" class="slds-m-left_small slds-m-top_small" value="{!item}" onchange="{!c.selectItems}" name="input2" checked="{!check == 'true'}" />
+                                                        </aura:iteration>
+                                                    </lightning:layoutItem>
+                                                    <lightning:layoutItem size="1">
+                                                        <img src="{!'/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&amp;versionId='+item.Id}" style="height:2rem; width:2rem;" />
+                                                    </lightning:layoutItem>
+                                                    <lightning:layoutItem size="10"  class="slds-m-left_medium ">
+                                                        <b style="color:#1E90FF;">{!item.Title}</b><br/>
+                                                        {!item.ContentModifiedDate}*{!item.ContentSize}*{!item.FileType}
+                                                    </lightning:layoutItem>
+                                                </lightning:layout>
+                                            </div>
+                                        </aura:iteration>
+                                    </lightning:layoutItem>
+                                </aura:if>
+                                <aura:if isTrue="{!v.noSearchResult}">
+                                    <lightning:layoutItem size="9">
+                                        <br/>
+                                        <p> No result found with entered input!! </p>
+                                    </lightning:layoutItem>
+                                </aura:if>
+                            </lightning:layout>
+                        </div>
+                    </p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:layout>
+                        <lightning:layoutItem size="6" class="slds-p-top_xx-small">
+                            <h5 style="text-align:left;">{!v.attcount} / 10 files attached. </h5>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem size="6">
+                            <lightning:button variant="neutral"
+                                              label="Cancel"
+                                              title="Cancel"
+                                              onclick="{! c.closeModel }"/>
+                            <lightning:button variant="brand"
+                                              label="{!'Add('+ v.attcount +')'}"
+                                              title="Add"
+                                              onclick="{!c.forAttachmentPill}"
+                                              disabled="{!v.addButton}"/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </footer> 
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div></aura:if>
+</aura:component>

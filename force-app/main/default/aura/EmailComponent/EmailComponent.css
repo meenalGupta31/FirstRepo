@@ -1,0 +1,26 @@
+.THIS .test input{
+    border:none;
+    margin:0px;
+}
+.THIS .test input:focus{
+    box-shadow:none;
+}
+.THIS .attbutton{
+    height:25px;
+    width:10px;
+    margin-top:5px;
+}
+.THIS .hove :hover{
+     background-color: #F0F8FF;
+}
+.THIS .slds-pill__label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: none;
+    width: calc(100% - 55px);
+    line-height: 30px;
+}
+.THIS .fullWidth {
+    width: 100% !important;
+}

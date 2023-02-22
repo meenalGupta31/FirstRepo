@@ -1,0 +1,21 @@
+<template>
+    <lightning-card  title="Hello" style="background-color:white;" icon-name="custom:custom63">
+
+    <p class="slds-p-left_x-small">Please enter the message here:</p>
+
+    <lightning-input type="text" label="Enter some text" class="slds-p-left_x-small slds-p-bottom_small" value={Message} onchange={handleMessage}></lightning-input>
+
+    <!-- <lightning-button variant="brand" label="Save" title="Primary action" onclick={handleLoad} class="slds-m-left_x-small"></lightning-button> -->
+
+    <P class="font slds-p-left_x-small">{Message}</P>
+
+    <template if:true={accountList}>
+        <p class="slds-p-left_x-small">Accounts List :- <br></p>
+        <template for:each={accountList} for:item="item">
+            <lightning-input key={item.Id} type="text" class="slds-p-left_x-small" label="Enter some text" name={item.Id} value={item.Name} onblur={onChangeAccountName}></lightning-input>
+        </template>
+    </template>
+   <c-demo-l-w-c-compoent-child messagevalue={Message}></c-demo-l-w-c-compoent-child>
+    </lightning-card>
+
+</template>

@@ -1,0 +1,46 @@
+<aura:component controller="EmailTab">
+    <aura:attribute name="selectedRecord" type="List"/> 
+    <aura:attribute name="strText" type="String"/>
+    <aura:attribute name="objectsRecord" type="List" /> 
+    <aura:attribute name="Emails" type="List" /> 
+    <aura:attribute name="displayDp" type="boolean" default="false"/>
+    <lightning:layout multipleRows="true" class="slds-box slds-box_xx-small">
+        
+        <aura:iteration items="{!v.selectedRecord}" var="item" indexVar="index">
+            <lightning:layoutItem>
+                <lightning:pill label="{!item.label}" onremove="{!c.handleItemRemove}" >
+                    <aura:set attribute="media">
+                        <lightning:icon iconName="{!'standard:'+item.iconname}" alternativeText="Lead"/>
+                    </aura:set>
+                </lightning:pill></lightning:layoutItem>
+        </aura:iteration>
+        <lightning:layoutItem flexibility="auto">
+            <lightning:input value="{!v.strText}" oncommit="{!c.onCommit}" variant="label-hidden"  onblur="{!c.onBlur}" onkeyup="{!c.searchRecords}" class="test"></lightning:input>
+        </lightning:layoutItem>
+    </lightning:layout>
+    <aura:if isTrue="{!v.displayDp}" >
+        <div class="slds-form-element">
+            <div class="slds-form-element__control">
+                <div class="slds-combobox_container">
+                    <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <!-- To display Drop down List -->
+                            <aura:iteration items="{!v.objectsRecord}" var="rec" indexVar="count">
+                                <li id="{!'toField '+count}" class="slds-listbox__item hove" role="presentation" onmousedown="{!c.selectItem}">
+                                    <div class="slds-media slds-listbox__option_entity slds-border_bottom">
+                                        <span>
+                                            <lightning:icon iconName="{!'standard:'+rec.ObjType}" alternativeText="objectIcon"></lightning:icon>
+                                        </span>
+                                        <span class="verticalAlign slds-p-left_x-small">
+                                            <span class="slds-truncate">{!rec.name}<br/>{!rec.email}</span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </aura:iteration>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

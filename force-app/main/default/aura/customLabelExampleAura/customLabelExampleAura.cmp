@@ -1,0 +1,9 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="homePageNews" type="String" />
+    <lightning:card title="{!$Label.c.WelcomeNoteLabel}">
+        <p>
+            <lightning:button variant="brand" label="{!$Label.c.NewCaseLabel}" onclick="{!c.newCaseAction}"/>
+        </p>
+        <p>{!v.homePageNews}</p>
+    </lightning:card>
+</aura:component>

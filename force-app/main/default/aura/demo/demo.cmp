@@ -1,0 +1,4 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	 <lightning:input type="number" name="input1" label="Enter a number" />
+     <lightning:input type="number" name="input7" label="Number field with currency formatter" value="123.45" formatter="currency" step="0.01"/>
+</aura:component>

@@ -1,0 +1,21 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="messageFromPublisher" type="String" />
+    <lightning:card title="Aura Component" iconName="custom:custom14">
+    <div style="background:white">
+        <div class="slds-m-around_medium">
+        <p>MessageChannel: MyMessageChannel__c</p>
+    </div>
+    <lightning:messageChannel
+                              type="MyMessageChannel__c"
+                              aura:id="sampleMessageChannel"
+                              />
+    <div class="slds-p-around_medium">
+        <!--<lightning:button label="Subscribe" variant="brand" onclick="{!c.handleMessage }"/>-->
+        <lightning:button label="Publish" variant="brand" onclick="{!c.publishMC }"/>
+        <br/><br/>
+        <p>Latest Message Received: </p><br/>
+        {!v.messageFromPublisher}
+    </div>
+    </div>
+    </lightning:card>
+</aura:component>

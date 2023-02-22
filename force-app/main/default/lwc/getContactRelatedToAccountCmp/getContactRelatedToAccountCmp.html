@@ -1,0 +1,7 @@
+<template>
+    <p>Contact Details</p>
+    <template for:each={Contacts} for:item="con">
+    <p key={con.Id}>{con.Name}</p>
+    </template>
+    <lightning-datatable key-field="ContactId" data={Contacts} columns={employeeColumns}> </lightning-datatable>
+</template>
